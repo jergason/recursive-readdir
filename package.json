@@ -5,7 +5,7 @@
   "version": "0.0.2",
   "repository": {
     "type": "git",
-    "url": "https://github.com/jergason/recursive-readdir"
+    "url": "git://github.com/jergason/recursive-readdir.git"
   },
   "main": "./index.js",
   "scripts": {
@@ -16,7 +16,7 @@
     "lister"
   ],
   "engines": {
-    "node": "~0.6.6"
+    "node": ">=0.6.6"
   },
   "dependencies": {},
   "devDependencies": {
