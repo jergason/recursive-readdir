@@ -2,6 +2,7 @@
   "author": "Jamison Dance <jergason@gmail.com> (http://jamisondance.com/)",
   "name": "recursive-readdir",
   "description": "Get an array of all files in a directory and subdirectories.",
+  "license": "MIT",
   "version": "0.0.2",
   "repository": {
     "type": "git",
