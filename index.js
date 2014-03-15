@@ -1,5 +1,5 @@
-var fs = require('fs'),
-  p = require('path');
+var fs = require('fs')
+var p = require('path')
 
 // how to know when you are done?
 function readdir(path, callback) {
