@@ -1,4 +1,5 @@
-var fs = require('fs')
+var fs = require('fs'),
+  p = require('path');
 
 // how to know when you are done?
 function readdir(path, callback) {
@@ -16,13 +17,13 @@ function readdir(path, callback) {
     }
 
     files.forEach(function (file) {
-      fs.stat(path + '/' + file, function (err, stats) {
+      fs.stat(p.join(path, file), function (err, stats) {
         if (err) {
           return callback(err)
         }
 
         if (stats.isDirectory()) {
-          files = readdir(path + '/' + file, function (err, res) {
+          files = readdir(p.join(path, file), function (err, res) {
             list = list.concat(res)
             pending -= 1
             if (!pending) {
@@ -31,7 +32,7 @@ function readdir(path, callback) {
           })
         }
         else {
-          list.push(path + '/' + file)
+          list.push(p.join(path, file))
           pending -= 1
           if (!pending) {
             callback(null, list)
