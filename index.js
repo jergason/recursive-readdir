@@ -2,7 +2,11 @@ var fs = require('fs')
 var p = require('path')
 
 // how to know when you are done?
-function readdir(path, callback) {
+function readdir(path, ignores, callback) {
+  if (typeof ignores == 'function') {
+    callback = ignores
+    ignores  = null
+  }
   var list = []
 
   fs.readdir(path, function (err, files) {
@@ -17,13 +21,17 @@ function readdir(path, callback) {
     }
 
     files.forEach(function (file) {
+      if (ignores != null && ignores.indexOf(file) > -1){
+        return pending -= 1
+      }
+
       fs.stat(p.join(path, file), function (err, stats) {
         if (err) {
           return callback(err)
         }
 
         if (stats.isDirectory()) {
-          files = readdir(p.join(path, file), function (err, res) {
+          files = readdir(p.join(path, file), ignores, function (err, res) {
             list = list.concat(res)
             pending -= 1
             if (!pending) {

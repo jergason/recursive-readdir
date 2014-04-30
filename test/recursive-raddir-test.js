@@ -14,4 +14,19 @@ describe('readdir', function() {
       done()
     })
   })
+  it('ignores the files listed in the ignores array', function (done) {
+    var notExpectedFiles = [
+      __dirname + '/testdir/d.txt',
+      __dirname + '/testdir/a/beans'
+    ]
+
+    readdir(__dirname + '/testdir', ['d.txt', 'beans'], function(err, list) {
+      assert.ifError(err);
+      list.forEach(function(file) {
+        assert.equal(notExpectedFiles.indexOf(file), -1,
+          'Failed to ignore file "'+ file +'".')
+      })
+      done()
+    })
+  })
 })
