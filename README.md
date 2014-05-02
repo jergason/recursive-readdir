@@ -13,10 +13,23 @@ It does not list directories themselves.
 
 
 ```javascript
-var recursive-readdir = require('recursive-readdir');
+var recursive = require('recursive-readdir');
 
-recursive-readdir('some/path', function (err, files) {
+recursive('some/path', function (err, files) {
   // Files is an array of filename
   console.log(files);
 });
 ```
+
+It can also take a list of files to ignore.
+
+```javascript
+var recursive = require('recursive-readdir');
+
+// ignore all files whose names contain the string '.cs' or '.html'
+recursive('some/path', ['.cs', '.html'], function (err, files) {
+  // Files is an array of filename
+  console.log(files);
+});
+
+It doesn't do globbing, just a simple `indexOf` check against the filename.
