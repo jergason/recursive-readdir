@@ -26,8 +26,8 @@ It can also take a list of files to ignore.
 ```javascript
 var recursive = require('recursive-readdir');
 
-// ignore all files whose names contain the string '.cs' or '.html'
-recursive('some/path', ['.cs', '.html'], function (err, files) {
+// ignore all files called 'foo.cs' or 'bar.html'.
+recursive('some/path', ['foo.cs', 'bar.html'], function (err, files) {
   // Files is an array of filename
   console.log(files);
 });
