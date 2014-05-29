@@ -26,10 +26,11 @@ It can also take a list of files to ignore.
 ```javascript
 var recursive = require('recursive-readdir');
 
-// ignore all files called 'foo.cs' or 'bar.html'.
-recursive('some/path', ['foo.cs', 'bar.html'], function (err, files) {
+// ignore files named 'foo.cs' or files that end in '.html'.
+recursive('some/path', ['foo.cs', '*.html'], function (err, files) {
   // Files is an array of filename
   console.log(files);
 });
+```
 
-It doesn't do globbing, just a simple `indexOf` check against the filename.
+Glob ignore syntax is supported.
