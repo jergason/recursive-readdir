@@ -1,11 +1,12 @@
 var fs = require('fs')
 var p = require('path')
+var minimatch = require('minimatch')
 
 // how to know when you are done?
 function readdir(path, ignores, callback) {
   if (typeof ignores == 'function') {
     callback = ignores
-    ignores  = null
+    ignores  = []
   }
   var list = []
 
@@ -20,9 +21,12 @@ function readdir(path, ignores, callback) {
       return callback(null, list)
     }
 
+    var ignoreOpts = {matchBase: true}
     files.forEach(function (file) {
-      if (ignores != null && ignores.indexOf(file) > -1){
-        return pending -= 1
+      for (var i = 0; i < ignores.length; i++) {
+        if (minimatch(p.join(path, file), ignores[i], ignoreOpts)) {
+          return pending -= 1
+        }
       }
 
       fs.stat(p.join(path, file), function (err, stats) {
