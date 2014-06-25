@@ -22,7 +22,11 @@ function readdir(path, ignores, callback) {
 
     files.forEach(function (file) {
       if (ignores != null && ignores.indexOf(file) > -1){
-        return pending -= 1
+        pending -= 1
+        if (pending <= 0) {
+          callback(null, list)
+        }
+        return 
       }
 
       fs.stat(p.join(path, file), function (err, stats) {
