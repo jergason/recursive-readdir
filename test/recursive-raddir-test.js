@@ -29,4 +29,11 @@ describe('readdir', function() {
       done()
     })
   })
+  it('works when there are no files to report except ignored files', function(done) {
+    readdir(__dirname + '/testdirBeta', ['ignore.txt'], function(err, list) {
+      assert.ifError(err);
+      assert.equal(list.length, 0, 'expect to report 0 files')
+      done()
+    })
+  })
 })
