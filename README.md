@@ -33,3 +33,4 @@ recursive('some/path', ['foo.cs', 'bar.html'], function (err, files) {
 });
 
 It doesn't do globbing, just a simple `indexOf` check against the filename.
+```
