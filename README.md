@@ -31,6 +31,6 @@ recursive('some/path', ['foo.cs', 'bar.html'], function (err, files) {
   // Files is an array of filename
   console.log(files);
 });
+```
 
 It doesn't do globbing, just a simple `indexOf` check against the filename.
-```
