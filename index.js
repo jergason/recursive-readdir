@@ -25,7 +25,11 @@ function readdir(path, ignores, callback) {
     files.forEach(function (file) {
       for (var i = 0; i < ignores.length; i++) {
         if (minimatch(p.join(path, file), ignores[i], ignoreOpts)) {
-          return pending -= 1
+          pending -= 1
+          if (pending <= 0) {
+            callback(null, list)
+          }
+          return
         }
       }
 
