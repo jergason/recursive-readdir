@@ -31,7 +31,7 @@ describe('readdir', function() {
     })
   })
 
-  it('supports ignoring files with just their basename', function (done) {
+  it('supports ignoring files with just basename globbing', function (done) {
     var notExpectedFiles = [
       __dirname + '/testdir/d.txt',
       __dirname + '/testdir/a/beans'
