@@ -14,6 +14,7 @@ describe('readdir', function() {
       done()
     })
   })
+
   it('ignores the files listed in the ignores array', function (done) {
     var notExpectedFiles = [
       __dirname + '/testdir/d.txt',
@@ -29,6 +30,41 @@ describe('readdir', function() {
       done()
     })
   })
+
+  it('supports ignoring files with just basename globbing', function (done) {
+    var notExpectedFiles = [
+      __dirname + '/testdir/d.txt',
+      __dirname + '/testdir/a/beans'
+    ]
+
+    readdir(__dirname + '/testdir', ['*.txt', 'beans'], function(err, list) {
+      assert.ifError(err);
+      list.forEach(function(file) {
+        assert.equal(notExpectedFiles.indexOf(file), -1,
+          'Failed to ignore file "'+ file +'".')
+      })
+      done()
+    })
+  })
+
+  it('supports ignoring files with the globstar syntax', function (done) {
+    var notExpectedFiles = [
+      __dirname + '/testdir/d.txt',
+      __dirname + '/testdir/a/beans'
+    ]
+
+    var ignores = ['**/*.txt', '**/a/beans']
+
+    readdir(__dirname + '/testdir', ignores, function(err, list) {
+      assert.ifError(err);
+      list.forEach(function(file) {
+        assert.equal(notExpectedFiles.indexOf(file), -1,
+          'Failed to ignore file "'+ file +'".')
+      })
+      done()
+    })
+  })
+
   it('works when there are no files to report except ignored files', function(done) {
     readdir(__dirname + '/testdirBeta', ['ignore.txt'], function(err, list) {
       assert.ifError(err);

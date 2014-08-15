@@ -19,7 +19,9 @@
   "engines": {
     "node": ">=0.6.6"
   },
-  "dependencies": {},
+  "dependencies": {
+    "minimatch": "~0.3.0"
+  },
   "devDependencies": {
     "mocha": "~1.14.0"
   }
