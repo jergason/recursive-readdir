@@ -31,7 +31,7 @@ describe('readdir', function() {
     })
   })
 
-  it('ignores supports base syntax', function (done) {
+  it('supports ignoring files with just their basename', function (done) {
     var notExpectedFiles = [
       __dirname + '/testdir/d.txt',
       __dirname + '/testdir/a/beans'
@@ -47,7 +47,7 @@ describe('readdir', function() {
     })
   })
 
-  it('ignores supports globstar syntax', function (done) {
+  it('supports ignoring files with the globstar syntax', function (done) {
     var notExpectedFiles = [
       __dirname + '/testdir/d.txt',
       __dirname + '/testdir/a/beans'
