@@ -33,4 +33,5 @@ recursive('some/path', ['foo.cs', '*.html'], function (err, files) {
 });
 ```
 
-Glob ignore syntax is supported.
+The ignore strings support Glob syntax via
+[minimatch](https://github.com/isaacs/minimatch).
