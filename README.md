@@ -1,5 +1,7 @@
 #recursive-readdir
 
+[![Build Status](https://travis-ci.org/jergason/recursive-readdir.svg?branch=master)](https://travis-ci.org/jergason/recursive-readdir)
+
 A simple Node module for recursively listing all files in a directory,
 or in any subdirectories.
 
