@@ -33,7 +33,7 @@ function readdir(path, ignores, callback) {
         }
       }
 
-      fs.stat(p.join(path, file), function (err, stats) {
+      fs.lstat(p.join(path, file), function (err, stats) {
         if (err) {
           return callback(err)
         }
