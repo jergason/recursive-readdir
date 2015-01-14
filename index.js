@@ -40,6 +40,10 @@ function readdir(path, ignores, callback) {
 
         if (stats.isDirectory()) {
           files = readdir(p.join(path, file), ignores, function (err, res) {
+            if (err) {
+              return callback(err)
+            }
+
             list = list.concat(res)
             pending -= 1
             if (!pending) {
