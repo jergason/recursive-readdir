@@ -1,4 +1,4 @@
-#recursive-readdir
+# recursive-readdir
 
 [![Build Status](https://travis-ci.org/jergason/recursive-readdir.svg?branch=master)](https://travis-ci.org/jergason/recursive-readdir)
 
@@ -10,11 +10,11 @@ It does not list directories themselves.
 Because it uses fs.readdir, which calls [readdir](http://linux.die.net/man/3/readdir) under the hood
 on OS X and Linux, the order of files inside directories is [not guaranteed](http://stackoverflow.com/questions/8977441/does-readdir-guarantee-an-order).
 
-##Installation
+## Installation
 
     npm install recursive-readdir
 
-##Usage
+## Usage
 
 
 ```javascript
