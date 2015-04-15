@@ -72,4 +72,20 @@ describe('readdir', function() {
       done()
     })
   })
+
+  it('works when negated ignore list is given', function(done) {
+
+    var expectedFiles = [
+      __dirname + '/testdir/c.txt',
+      __dirname + '/testdir/d.txt',
+      __dirname + '/testdirBeta/ignore.txt'
+    ]
+
+    readdir(__dirname, ['!*.txt'], function(err, list) {
+      assert.ifError(err);
+      assert.deepEqual(list.sort(), expectedFiles,
+                       'Failed to find expected files.')
+      done()
+    })
+  })
 })
