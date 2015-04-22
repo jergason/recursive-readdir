@@ -23,23 +23,14 @@ function readdir(path, ignores, callback) {
 
     var ignoreOpts = {matchBase: true}
     files.forEach(function (file) {
-      for (var i = 0; i < ignores.length; i++) {
-        if (minimatch(p.join(path, file), ignores[i], ignoreOpts)) {
-          pending -= 1
-          if (pending <= 0) {
-            callback(null, list)
-          }
-          return
-        }
-      }
-
       fs.lstat(p.join(path, file), function (err, stats) {
         if (err) {
           return callback(err)
         }
 
+        file = p.join(path, file)
         if (stats.isDirectory()) {
-          files = readdir(p.join(path, file), ignores, function (err, res) {
+          files = readdir(file, ignores, function (err, res) {
             if (err) {
               return callback(err)
             }
@@ -52,7 +43,16 @@ function readdir(path, ignores, callback) {
           })
         }
         else {
-          list.push(p.join(path, file))
+          for (var i = 0; i < ignores.length; i++) {
+            if (minimatch(file, ignores[i], ignoreOpts)) {
+              pending -= 1
+              if (pending <= 0) {
+                callback(null, list)
+              }
+              return
+            }
+          }
+          list.push(file)
           pending -= 1
           if (!pending) {
             callback(null, list)
