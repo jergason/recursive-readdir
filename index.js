@@ -2,6 +2,8 @@ var fs = require('fs')
 var p = require('path')
 var minimatch = require('minimatch')
 
+var ignoreOpts = {matchBase: true}
+
 // how to know when you are done?
 function readdir(path, ignores, callback) {
   if (typeof ignores == 'function') {
@@ -21,7 +23,6 @@ function readdir(path, ignores, callback) {
       return callback(null, list)
     }
 
-    var ignoreOpts = {matchBase: true}
     files.forEach(function (file) {
       fs.lstat(p.join(path, file), function (err, stats) {
         if (err) {
@@ -63,4 +64,41 @@ function readdir(path, ignores, callback) {
   })
 }
 
+var readdirSync = function(dir, ignores) {
+  var results = []
+  var list = fs.readdirSync(dir)
+
+  if (!list) {
+    return results
+  }
+
+  list.forEach(function(file) {
+    file = dir + '/' + file
+    var stat = fs.statSync(file)
+    if (stat && stat.isDirectory()) {
+      var res = readdirSync(file, ignores)
+      results = results.concat(res)
+    } else {
+      var isIgnored = false
+
+      if (Array.isArray(ignores)) {
+        ignores.some(function(ignore) {
+          if (minimatch(file, ignore, ignoreOpts)) {
+            isIgnored = true
+            return true
+          }
+        })
+      }
+
+      if (!isIgnored) {
+        results.push(file)
+      }
+    }
+  })
+
+  return results
+}
+
 module.exports = readdir
+
+module.exports.sync = readdirSync
