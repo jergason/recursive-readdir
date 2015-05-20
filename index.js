@@ -1,5 +1,5 @@
 var fs = require('fs')
-var p = require('path')
+var pathJoin = require('path').join
 var minimatch = require('minimatch')
 
 var ignoreOpts = {matchBase: true}
@@ -24,12 +24,12 @@ function readdir(path, ignores, callback) {
     }
 
     files.forEach(function (file) {
-      fs.lstat(p.join(path, file), function (err, stats) {
+      fs.lstat(pathJoin(path, file), function (err, stats) {
         if (err) {
           return callback(err)
         }
 
-        file = p.join(path, file)
+        file = pathJoin(path, file)
         if (stats.isDirectory()) {
           files = readdir(file, ignores, function (err, res) {
             if (err) {
@@ -73,7 +73,7 @@ var readdirSync = function(dir, ignores) {
   }
 
   list.forEach(function(file) {
-    file = dir + '/' + file
+    file = pathJoin(dir, file);
     var stat = fs.statSync(file)
     if (stat && stat.isDirectory()) {
       var res = readdirSync(file, ignores)
