@@ -1,0 +1,14 @@
+{
+  "extends": "eslint",
+  "rules": {
+    "semi": [2, "never"],
+    "require-jsdoc": 0,
+    "quotes": [2, "single"],
+    "strict": 0,
+    "indent": [2, 2],
+    "eqeqeq": 0
+  },
+  "env": {
+    "node": true
+  }
+}

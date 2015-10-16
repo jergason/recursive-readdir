@@ -6,11 +6,11 @@ var minimatch = require('minimatch')
 function readdir(path, ignores, callback) {
   if (typeof ignores == 'function') {
     callback = ignores
-    ignores  = []
+    ignores = []
   }
   var list = []
 
-  fs.readdir(path, function (err, files) {
+  fs.readdir(path, function(err, files) {
     if (err) {
       return callback(err)
     }
@@ -22,40 +22,39 @@ function readdir(path, ignores, callback) {
     }
 
     var ignoreOpts = {matchBase: true}
-    files.forEach(function (file) {
-      fs.lstat(p.join(path, file), function (err, stats) {
-        if (err) {
-          return callback(err)
+    files.forEach(function(file) {
+      fs.lstat(p.join(path, file), function(_err, stats) {
+        if (_err) {
+          return callback(_err)
         }
 
         file = p.join(path, file)
         if (stats.isDirectory()) {
-          files = readdir(file, ignores, function (err, res) {
-            if (err) {
-              return callback(err)
+          files = readdir(file, ignores, function(__err, res) {
+            if (__err) {
+              return callback(__err)
             }
 
             list = list.concat(res)
             pending -= 1
             if (!pending) {
-              callback(null, list)
+              return callback(null, list)
             }
           })
-        }
-        else {
+        } else {
           for (var i = 0; i < ignores.length; i++) {
             if (minimatch(file, ignores[i], ignoreOpts)) {
               pending -= 1
               if (pending <= 0) {
-                callback(null, list)
+                return callback(null, list)
               }
-              return
+              return null
             }
           }
           list.push(file)
           pending -= 1
           if (!pending) {
-            callback(null, list)
+            return callback(null, list)
           }
         }
       })

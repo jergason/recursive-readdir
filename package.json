@@ -10,7 +10,9 @@
   },
   "main": "./index.js",
   "scripts": {
-    "test": "mocha test/"
+    "test": "npm run lint && npm run test_code",
+    "test_code": "mocha test/",
+    "lint": "eslint index.js test/recursive-readdir-test.js"
   },
   "keywords": [
     "directory",
@@ -23,6 +25,8 @@
     "minimatch": "~0.3.0"
   },
   "devDependencies": {
+    "eslint": "^1.6.0",
+    "eslint-config-eslint": "^1.0.1",
     "mocha": "~1.14.0"
   }
 }
