@@ -22,11 +22,10 @@
     "node": ">=0.6.6"
   },
   "dependencies": {
-    "minimatch": "~0.3.0"
+    "minimatch": "0.3.0"
   },
   "devDependencies": {
     "eslint": "1.6.0",
-    "eslint-config-eslint": "1.0.1",
     "mocha": "1.14.0"
   }
 }
