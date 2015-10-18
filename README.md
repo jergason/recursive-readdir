@@ -38,5 +38,24 @@ recursive('some/path', ['foo.cs', '*.html'], function (err, files) {
 });
 ```
 
+You can also pass functions which are called to determine whether or not to
+ignore a file:
+
+```javascript
+var recursive = require('recursive-readdir');
+
+function ignoreFunc(file, stats) {
+  // `file` is the absolute path to the file, and `stats` is an `fs.Stats`
+  // object returned from `fs.lstat()`.
+  return stats.isDirectory() && path.basename(file) == "test";
+}
+
+// Ignore files named 'foo.cs' and descendants of directories named test
+recursive('some/path', ['foo.cs', ignoreFunc], function (err, files) {
+  // Files is an array of filename
+  console.log(files);
+});
+```
+
 The ignore strings support Glob syntax via
 [minimatch](https://github.com/isaacs/minimatch).
