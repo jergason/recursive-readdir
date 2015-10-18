@@ -4,7 +4,8 @@ var minimatch = require('minimatch')
 
 function patternMatcher(pattern) {
   return function(path, stats) {
-    return stats.isFile() && minimatch(path, pattern, {matchBase: true})
+    var minimatcher = new minimatch.Minimatch(pattern, {matchBase: true})
+    return (!minimatcher.negate || stats.isFile()) && minimatcher.match(path)
   }
 }
 
