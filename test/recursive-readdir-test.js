@@ -41,6 +41,21 @@ describe('readdir', function() {
     })
   })
 
+  it('ignores the directories listed in the ignores array', function(done) {
+    var notExpectedFiles = getAbsolutePaths([
+      '/testdir/a/a', '/testdir/a/beans'
+    ])
+
+    readdir(p.join(__dirname, 'testdir'), ['**/testdir/a'], function(err, list) {
+      assert.ifError(err)
+      list.forEach(function(file) {
+        assert.equal(notExpectedFiles.indexOf(file), -1,
+          'Failed to ignore file "' + file + '".')
+      })
+      done()
+    })
+  })
+
   it('supports ignoring files with just basename globbing', function(done) {
     var notExpectedFiles = getAbsolutePaths([
       '/testdir/d.txt', '/testdir/a/beans'
