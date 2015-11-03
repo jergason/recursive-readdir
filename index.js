@@ -53,6 +53,7 @@ function readdir(path, ignores, callback) {
         }
 
         if (stats.isDirectory()) {
+          list.push(file)
           readdir(file, ignores, function(__err, res) {
             if (__err) {
               return callback(__err)
