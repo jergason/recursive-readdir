@@ -248,4 +248,19 @@ describe('readdir', function() {
       done()
     })
   })
+
+  it('traverses directory and file symbolic links', function(done) {
+    var expectedFiles = getAbsolutePaths([
+      '/testsymlinks/testdir/linkeddir/hi.docx',
+      '/testsymlinks/testdir/linkedfile.wmf'
+    ])
+
+    readdir(p.join(__dirname,'testsymlinks','testdir'), function(err, list) {
+      console.log(list,expectedFiles);
+      assert.ifError(err)
+      assert.deepEqual(list.sort(), expectedFiles,
+                       'Failed to find expected files.')
+      done()
+    })
+  })
 })
