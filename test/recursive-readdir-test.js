@@ -56,6 +56,20 @@ describe('readdir', function() {
     })
   })
 
+  it('ignores symlinked files and directories listed in the ignores array', function(done) {
+    var notExpectedFiles = getAbsolutePaths([
+      '/testsymlinks/testdir/linkeddir/hi.docx', '/testsymlinks/testdir/linkedfile.wmf'
+    ])
+    readdir(p.join(__dirname, 'testsymlinks/testdir'), ['linkeddir', 'linkedfile.wmf'], function(err, list) {
+      assert.ifError(err)
+      list.forEach(function(file) {
+        assert.equal(notExpectedFiles.indexOf(file), -1,
+                     'Failed to ignore file "' + file + '".')
+      })
+      done()
+    })
+  })
+
   it('supports ignoring files with just basename globbing', function(done) {
     var notExpectedFiles = getAbsolutePaths([
       '/testdir/d.txt', '/testdir/a/beans'
@@ -113,7 +127,7 @@ describe('readdir', function() {
       })
     })
 
-    it('passes the lstat object of each file to the function as its second argument', function(done) {
+    it('passes the stat object of each file to the function as its second argument', function(done) {
       var paths = {}
       function ignoreFunction(path, stats) {
         paths[path] = stats
@@ -256,7 +270,6 @@ describe('readdir', function() {
     ])
 
     readdir(p.join(__dirname,'testsymlinks','testdir'), function(err, list) {
-      console.log(list,expectedFiles);
       assert.ifError(err)
       assert.deepEqual(list.sort(), expectedFiles,
                        'Failed to find expected files.')
