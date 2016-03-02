@@ -56,6 +56,20 @@ describe('readdir', function() {
     })
   })
 
+  it('ignores symlinked files and directories listed in the ignores array', function(done) {
+    var notExpectedFiles = getAbsolutePaths([
+      '/testsymlinks/testdir/linkeddir/hi.docx', '/testsymlinks/testdir/linkedfile.wmf'
+    ])
+    readdir(p.join(__dirname, 'testsymlinks/testdir'), ['linkeddir', 'linkedfile.wmf'], function(err, list) {
+      assert.ifError(err)
+      list.forEach(function(file) {
+        assert.equal(notExpectedFiles.indexOf(file), -1,
+                     'Failed to ignore file "' + file + '".')
+      })
+      done()
+    })
+  })
+
   it('supports ignoring files with just basename globbing', function(done) {
     var notExpectedFiles = getAbsolutePaths([
       '/testdir/d.txt', '/testdir/a/beans'
@@ -113,7 +127,7 @@ describe('readdir', function() {
       })
     })
 
-    it('passes the lstat object of each file to the function as its second argument', function(done) {
+    it('passes the stat object of each file to the function as its second argument', function(done) {
       var paths = {}
       function ignoreFunction(path, stats) {
         paths[path] = stats
@@ -229,7 +243,7 @@ describe('readdir', function() {
   })
 
   it('works when there are no files to report except ignored files', function(done) {
-    readdir(p.join(__dirname, 'testdirBeta'), ['ignore.txt'], function(err, list) {
+    readdir(p.join(__dirname, 'testdirBeta'), ['*'], function(err, list) {
       assert.ifError(err)
       assert.equal(list.length, 0, 'expect to report 0 files')
       done()
@@ -238,10 +252,24 @@ describe('readdir', function() {
 
   it('works when negated ignore list is given', function(done) {
     var expectedFiles = getAbsolutePaths([
-      '/testdir/c.txt', '/testdir/d.txt', '/testdirBeta/ignore.txt'
+      '/testdirBeta/ignore.txt'
     ])
 
-    readdir(__dirname, ['!*.txt'], function(err, list) {
+    readdir(p.join(__dirname, 'testdirBeta'), ['!*.txt'], function(err, list) {
+      assert.ifError(err)
+      assert.deepEqual(list.sort(), expectedFiles,
+                       'Failed to find expected files.')
+      done()
+    })
+  })
+
+  it('traverses directory and file symbolic links', function(done) {
+    var expectedFiles = getAbsolutePaths([
+      '/testsymlinks/testdir/linkeddir/hi.docx',
+      '/testsymlinks/testdir/linkedfile.wmf'
+    ])
+
+    readdir(p.join(__dirname,'testsymlinks','testdir'), function(err, list) {
       assert.ifError(err)
       assert.deepEqual(list.sort(), expectedFiles,
                        'Failed to find expected files.')

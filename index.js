@@ -38,13 +38,13 @@ function readdir(path, ignores, callback) {
     }
 
     files.forEach(function(file) {
-      fs.lstat(p.join(path, file), function(_err, stats) {
+      var filePath = p.join(path, file)
+      fs.stat(filePath, function(_err, stats) {
         if (_err) {
           return callback(_err)
         }
 
-        file = p.join(path, file)
-        if (ignores.some(function(matcher) { return matcher(file, stats) })) {
+        if (ignores.some(function(matcher) { return matcher(filePath, stats) })) {
           pending -= 1
           if (!pending) {
             return callback(null, list)
@@ -53,7 +53,7 @@ function readdir(path, ignores, callback) {
         }
 
         if (stats.isDirectory()) {
-          readdir(file, ignores, function(__err, res) {
+          readdir(filePath, ignores, function(__err, res) {
             if (__err) {
               return callback(__err)
             }
@@ -65,7 +65,7 @@ function readdir(path, ignores, callback) {
             }
           })
         } else {
-          list.push(file)
+          list.push(filePath)
           pending -= 1
           if (!pending) {
             return callback(null, list)
