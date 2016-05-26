@@ -41,7 +41,7 @@ function readdir(path, ignores, callback) {
       var filePath = p.join(path, file)
       fs.stat(filePath, function(_err, stats) {
         if (_err) {
-          return callback(_err)
+          return null
         }
 
         if (ignores.some(function(matcher) { return matcher(filePath, stats) })) {
