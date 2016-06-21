@@ -20,7 +20,7 @@
     "node": ">=0.6.6"
   },
   "dependencies": {
-    "minimatch": "0.3.0"
+    "minimatch": "^3.0.2"
   },
   "devDependencies": {
     "mocha": "1.14.0"
