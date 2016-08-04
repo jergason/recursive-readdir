@@ -276,4 +276,18 @@ describe('readdir', function() {
       done()
     })
   })
+
+  it('works with promises', function(done) {
+    var expectedFiles = getAbsolutePaths([
+      '/testdir/a/a', '/testdir/a/beans',
+      '/testdir/b/123', '/testdir/b/b/hurp-durp',
+      '/testdir/c.txt', '/testdir/d.txt'
+    ])
+
+    readdir(p.join(__dirname, 'testdir'))
+    .then(function(list) {
+      assert.deepEqual(list.sort(), expectedFiles.sort())
+      done()
+    })
+  })
 })
