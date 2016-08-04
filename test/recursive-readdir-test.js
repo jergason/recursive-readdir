@@ -277,17 +277,22 @@ describe('readdir', function() {
     })
   })
 
-  it('works with promises', function(done) {
-    var expectedFiles = getAbsolutePaths([
-      '/testdir/a/a', '/testdir/a/beans',
-      '/testdir/b/123', '/testdir/b/b/hurp-durp',
-      '/testdir/c.txt', '/testdir/d.txt'
-    ])
+  if (!global.Promise) {
+    console.log("Native Promise not supported - skipping tests")
+  } else {
+    it('works with promises', function(done) {
 
-    readdir(p.join(__dirname, 'testdir'))
-    .then(function(list) {
-      assert.deepEqual(list.sort(), expectedFiles.sort())
-      done()
+      var expectedFiles = getAbsolutePaths([
+        '/testdir/a/a', '/testdir/a/beans',
+        '/testdir/b/123', '/testdir/b/b/hurp-durp',
+        '/testdir/c.txt', '/testdir/d.txt'
+      ])
+
+      readdir(p.join(__dirname, 'testdir'))
+      .then(function(list) {
+        assert.deepEqual(list.sort(), expectedFiles.sort())
+        done()
+      })
     })
-  })
+  }
 })
