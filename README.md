@@ -58,7 +58,7 @@ recursive('some/path', ['foo.cs', ignoreFunc], function (err, files) {
 ```
 
 The ignore strings support Glob syntax via
-[minimatch](https://github.com/isaacs/minimat
+[minimatch](https://github.com/isaacs/minimatch).
 
 ## Options
 ```javascript
