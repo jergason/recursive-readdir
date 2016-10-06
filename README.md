@@ -58,4 +58,15 @@ recursive('some/path', ['foo.cs', ignoreFunc], function (err, files) {
 ```
 
 The ignore strings support Glob syntax via
-[minimatch](https://github.com/isaacs/minimatch).
+[minimatch](https://github.com/isaacs/minimat
+
+## Options
+```javascript
+recursive('some/path', options, callback)
+```
+
+Option can be
+- an array of files to ignore
+- an object with one or more property:
+    - "ignores": [] -> an array of files to ignore
+    - "forceContinue": true/false -> a boolean. true to return files even if errors occures with fs.stat (if symbolic links are broken)
