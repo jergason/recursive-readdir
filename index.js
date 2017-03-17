@@ -17,12 +17,24 @@ function toMatcherFunction(ignoreEntry) {
   }
 }
 
-function readdir(path, ignores, callback) {
-  if (typeof ignores == 'function') {
-    callback = ignores
-    ignores = []
+function readdir(path, options, callback) {
+  if (typeof options == 'function') {
+    callback = options
+    options = {}
   }
-  ignores = ignores.map(toMatcherFunction)
+  
+  if (Array.isArray(options)) {
+    options.ignores = options
+  } else {
+    if (!options.hasOwnProperty('ignores')) {
+      options.ignores = []
+    }
+    if (!options.hasOwnProperty('forceContinue')) {
+      options.forceContinue = false
+    }
+  }
+  
+  options.ignores = options.ignores.map(toMatcherFunction)
 
   var list = []
 
@@ -41,10 +53,18 @@ function readdir(path, ignores, callback) {
       var filePath = p.join(path, file)
       fs.stat(filePath, function(_err, stats) {
         if (_err) {
-          return callback(_err)
+          if (options.forceContinue) {
+            pending -= 1
+            if (!pending) {
+              return callback(null, list)
+            }
+            return null
+          } else {
+            return callback(_err)
+          }
         }
 
-        if (ignores.some(function(matcher) { return matcher(filePath, stats) })) {
+        if (options.ignores.some(function(matcher) { return matcher(filePath, stats) })) {
           pending -= 1
           if (!pending) {
             return callback(null, list)
@@ -53,7 +73,7 @@ function readdir(path, ignores, callback) {
         }
 
         if (stats.isDirectory()) {
-          readdir(filePath, ignores, function(__err, res) {
+          readdir(filePath, options, function(__err, res) {
             if (__err) {
               return callback(__err)
             }
