@@ -41,6 +41,23 @@ function readdir(path, ignores, callback) {
       var filePath = p.join(path, file)
       fs.stat(filePath, function(_err, stats) {
         if (_err) {
+          if (_err.code == 'ENOENT') {
+            fs.lstat(filePath, function(_lserr, stats) {
+              if (_lserr) {
+                return callback(_lserr)
+              }
+
+              if (ignores.some(function(matcher) { return matcher(filePath, stats) })) {
+                pending -= 1
+                if (!pending) {
+                  return callback(null, list)
+                }
+                return null
+              }
+              return callback(_err)
+            })
+            return null
+          }
           return callback(_err)
         }
 
