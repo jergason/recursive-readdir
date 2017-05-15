@@ -9,15 +9,6 @@ function patternMatcher(pattern) {
   };
 }
 
-readdir("some/path").then(
-  function(files) {
-    console.log("files are", files);
-  },
-  function(error) {
-    console.error("something exploded", error);
-  }
-);
-
 function toMatcherFunction(ignoreEntry) {
   if (typeof ignoreEntry == "function") {
     return ignoreEntry;
