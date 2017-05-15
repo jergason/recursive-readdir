@@ -240,6 +240,22 @@ describe('readdir', function() {
         done()
       })
     })
+
+    it('does not fail on broken symlink if it is ignored', function(done) {
+      var expectedFiles = getAbsolutePaths([
+        '/testbrokensymlink/foo.bar'
+      ])
+      function ignoreFunction(path, stats) {
+        return stats.isSymbolicLink();
+      }
+
+      readdir(p.join(__dirname, 'testbrokensymlink'), [ignoreFunction], function(err, list) {
+        assert.ifError(err)
+        assert.deepEqual(list.sort(), expectedFiles,
+                         'Failed to find expected files.')
+        done()
+      })
+    })
   })
 
   it('works when there are no files to report except ignored files', function(done) {
