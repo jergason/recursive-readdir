@@ -18,10 +18,24 @@ function toMatcherFunction(ignoreEntry) {
 }
 
 function readdir(path, ignores, callback) {
+
   if (typeof ignores == 'function') {
     callback = ignores
     ignores = []
   }
+
+  if (!callback) {
+    return new Promise(function (resolve, reject) {
+      readdir(path, ignores || [], function (err, data) {
+        if (err) {
+          reject(err)
+        } else {
+          resolve(data)
+        }
+      })
+    })
+  }
+
   ignores = ignores.map(toMatcherFunction)
 
   var list = []
