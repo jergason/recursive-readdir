@@ -5,7 +5,7 @@ var minimatch = require('minimatch')
 function patternMatcher(pattern) {
   return function(path, stats) {
     var minimatcher = new minimatch.Minimatch(pattern, {matchBase: true})
-    return (!minimatcher.negate || stats.isFile()) && minimatcher.match(path)
+    return !(minimatcher.negate && stats.isDirectory()) && minimatcher.match(path)
   }
 }
 
