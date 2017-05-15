@@ -3,7 +3,7 @@
   "name": "recursive-readdir",
   "description": "Get an array of all files in a directory and subdirectories.",
   "license": "MIT",
-  "version": "2.1.1",
+  "version": "2.2.0",
   "repository": {
     "type": "git",
     "url": "git://github.com/jergason/recursive-readdir.git"
