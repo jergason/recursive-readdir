@@ -53,9 +53,9 @@ function readdir(path, ignores, callback) {
 
     files.forEach(function(file) {
       var filePath = p.join(path, file)
-      fs.stat(filePath, function(_err, stats) {
+      fs.lstat(filePath, function(_err, stats) {
         if (_err) {
-          return callback(_err)
+          return null
         }
 
         if (ignores.some(function(matcher) { return matcher(filePath, stats) })) {
