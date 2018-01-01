@@ -1,96 +1,72 @@
-var fs = require("fs");
-var p = require("path");
-var minimatch = require("minimatch");
+let fs = require('fs')
+,		p = require('path')
+,		minimatch = require('minimatch')
 
 function patternMatcher(pattern) {
-  return function(path, stats) {
-    var minimatcher = new minimatch.Minimatch(pattern, { matchBase: true });
-    return (!minimatcher.negate || stats.isFile()) && minimatcher.match(path);
-  };
+  return (path, stats) => {
+    let minimatcher = new minimatch.Minimatch(pattern, { matchBase: true })
+    return (!minimatcher.negate || stats.isFile()) && minimatcher.match(path)
+  }
 }
 
 function toMatcherFunction(ignoreEntry) {
-  if (typeof ignoreEntry == "function") {
-    return ignoreEntry;
-  } else {
-    return patternMatcher(ignoreEntry);
-  }
+  return typeof ignoreEntry == 'function' ? ignoreEntry : patternMatcher(ignoreEntry)
 }
 
 function readdir(path, ignores, callback) {
-  if (typeof ignores == "function") {
-    callback = ignores;
-    ignores = [];
+  if(typeof ignores == 'function') {
+    callback = ignores
+    ignores = []
   }
 
-  if (!callback) {
-    return new Promise(function(resolve, reject) {
-      readdir(path, ignores || [], function(err, data) {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(data);
-        }
-      });
-    });
+  if(!callback) {
+    return new Promise((resolve, reject) => {
+      readdir(path, ignores || [], (err, data) => {
+        if (err) { reject(err) } else { resolve(data) }
+      })
+    })
   }
 
-  ignores = ignores.map(toMatcherFunction);
+  ignores = ignores.map(toMatcherFunction)
 
-  var list = [];
+  let list = []
 
-  fs.readdir(path, function(err, files) {
-    if (err) {
-      return callback(err);
-    }
+  fs.readdir(path, (err, files) => {
+    if(err) { return callback(err) }
 
-    var pending = files.length;
-    if (!pending) {
+    let pending = files.length
+    if(!pending) {
       // we are done, woop woop
-      return callback(null, list);
+      return callback(null, list)
     }
 
-    files.forEach(function(file) {
-      var filePath = p.join(path, file);
-      fs.stat(filePath, function(_err, stats) {
-        if (_err) {
-          return callback(_err);
+    for(let i = 0; i < pending; i++) {
+      let filePath = p.join(path, files[i])
+      fs.stat(filePath, (_err, stats) => {
+        if(_err) { return callback(_err) }
+
+        if(ignores.some(matcher => { matcher(filePath, stats) })) {
+          pending -= 1
+          if (!pending) { return callback(null, list) }
+          return null
         }
 
-        if (
-          ignores.some(function(matcher) {
-            return matcher(filePath, stats);
+        if(stats.isDirectory()) {
+          readdir(filePath, ignores, (__err, res) => {
+            if(__err) { return callback(__err) }
+
+            list = list.concat(res)
+            pending -= 1
+            if(!pending) { return callback(null, list) }
           })
-        ) {
-          pending -= 1;
-          if (!pending) {
-            return callback(null, list);
-          }
-          return null;
-        }
-
-        if (stats.isDirectory()) {
-          readdir(filePath, ignores, function(__err, res) {
-            if (__err) {
-              return callback(__err);
-            }
-
-            list = list.concat(res);
-            pending -= 1;
-            if (!pending) {
-              return callback(null, list);
-            }
-          });
         } else {
-          list.push(filePath);
-          pending -= 1;
-          if (!pending) {
-            return callback(null, list);
-          }
+          list.push(filePath)
+          pending -= 1
+          if(!pending) { return callback(null, list) }
         }
-      });
-    });
-  });
+      })
+    }
+  })
 }
 
-module.exports = readdir;
+module.exports = readdir
