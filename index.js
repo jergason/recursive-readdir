@@ -88,7 +88,7 @@ function readdir(path, ignores, callback) {
           return null;
         }
 
-        if (stats.isDirectory()) {
+        if (stats && stats.isDirectory && stats.isDirectory()) {
           readdir(filePath, ignores, function(__err, res) {
             if (__err) {
               return callback(__err);
