@@ -17,7 +17,18 @@ function toMatcherFunction(ignoreEntry) {
   }
 }
 
+function isObject(obj) {
+  return obj === Object(obj);
+}
+
 function readdir(path, ignores, callback) {
+  let fileSys = fs;
+  if (isObject(ignores)) {
+    var opts = ignores;
+    ignores = opts.ignores;
+    fileSys = opts.fs || fileSys;
+  }
+
   if (typeof ignores == "function") {
     callback = ignores;
     ignores = [];
@@ -39,7 +50,7 @@ function readdir(path, ignores, callback) {
 
   var list = [];
 
-  fs.readdir(path, function(err, files) {
+  fileSys.readdir(path, function(err, files) {
     if (err) {
       return callback(err);
     }
@@ -52,7 +63,7 @@ function readdir(path, ignores, callback) {
 
     files.forEach(function(file) {
       var filePath = p.join(path, file);
-      fs.stat(filePath, function(_err, stats) {
+      fileSys.stat(filePath, function(_err, stats) {
         if (_err) {
           return callback(_err);
         }
