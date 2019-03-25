@@ -83,14 +83,13 @@ const fileStruct = {
 };
 vol.fromJSON(fileStruct, "/app");
 
-recursive(
-  "/app",
-  {
-    ignores: ["README.md"],
-    fs
-  },
-  function(err, files) {
-    console.log(files);
-  }
-);
+const successFn = files => console.log(files);
+const errFn = err => console.error(err);
+
+// using promise API
+recursive("/app", {
+  ignores: ["README.md"],
+  fs, // in-memory fs
+  debug: true
+}).then(successFn, errFn);
 ```

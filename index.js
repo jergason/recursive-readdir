@@ -21,22 +21,40 @@ function isObject(obj) {
   return obj === Object(obj);
 }
 
-function readdir(path, ignores, callback) {
+function readdir(path, opts = {}, callback) {
+  if (debug) {
+    const $opts = {
+      ...opts
+    };
+    delete $opts.fs;
+    console.log("readdir", { path, opts: $opts });
+  }
+
+  let ignores = [];
   let fileSys = fs;
-  if (isObject(ignores)) {
-    var opts = ignores;
+
+  if (isObject(opts)) {
+    debug = opts.debug;
     ignores = opts.ignores || [];
+    if (debug) {
+      if (opts.fs) {
+        console.log("readdir: using custom fs");
+      } else {
+        console.log("readdir: using node fs");
+      }
+    }
     fileSys = opts.fs || fileSys;
   }
 
-  if (typeof ignores == "function") {
-    callback = ignores;
+  if (typeof opts == "function") {
+    callback = opts;
     ignores = [];
   }
 
   if (!callback) {
     return new Promise(function(resolve, reject) {
-      readdir(path, ignores || [], function(err, data) {
+      opts.ignores = opts.ignores || [];
+      $readdir(path, opts, function(err, data) {
         if (err) {
           reject(err);
         } else {
@@ -49,7 +67,15 @@ function readdir(path, ignores, callback) {
   ignores = ignores || [];
   ignores = ignores.map(toMatcherFunction);
 
+  opts.ignores = ignores;
+
+  $readdir(path, opts, callback);
+}
+
+function $readdir(path, opts = {}, callback) {
   var list = [];
+  const ignores = opts.ignores || [];
+  const fileSys = opts.fs || fs;
 
   fileSys.readdir(path, function(err, files) {
     if (err) {
@@ -82,7 +108,7 @@ function readdir(path, ignores, callback) {
         }
 
         if (stats.isDirectory()) {
-          readdir(filePath, ignores, function(__err, res) {
+          readdir(filePath, opts, function(__err, res) {
             if (__err) {
               return callback(__err);
             }
