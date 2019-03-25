@@ -85,11 +85,17 @@ vol.fromJSON(fileStruct, "/app");
 
 const successFn = files => console.log(files);
 const errFn = err => console.error(err);
+```
 
+You can also pass debugging and logging options to monitor how the file structure is processed,
+what files are ignore etc.
+
+```js
 // using promise API
 recursive("/app", {
   ignores: ["README.md"],
   fs, // in-memory fs
-  debug: true
+  debug: true,
+  log: (...msg) => console.log("readdir", ...msg)
 }).then(successFn, errFn);
 ```
