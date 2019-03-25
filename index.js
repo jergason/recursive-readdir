@@ -25,7 +25,7 @@ function readdir(path, ignores, callback) {
   let fileSys = fs;
   if (isObject(ignores)) {
     var opts = ignores;
-    ignores = opts.ignores;
+    ignores = opts.ignores || [];
     fileSys = opts.fs || fileSys;
   }
 
@@ -46,6 +46,7 @@ function readdir(path, ignores, callback) {
     });
   }
 
+  ignores = ignores || [];
   ignores = ignores.map(toMatcherFunction);
 
   var list = [];
