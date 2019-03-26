@@ -24,38 +24,50 @@ function isObject(obj) {
 const createLogger = (debug, log) => (...msg) => debug && log(...msg);
 
 function readdir(path, opts = {}, callback) {
-  const debug = opts.debug;
-  const log = createLogger(debug, opts.log || console.log);
-  if (debug) {
-    const $opts = {
+  let ignores = [];
+  let $opts;
+  if (typeof opts == "function") {
+    callback = opts;
+    $opts = {
+      ignores
+    };
+  } else if (Array.isArray(opts)) {
+    ignores = opts;
+    $opts = {
+      ignores
+    };
+  } else if (isObject(opts)) {
+    $opts = {
       ...opts
     };
+  } else {
+    throw `Invalid opts: ${opts}, must be an Array, Object or Function, was: ${typeof opts}`;
+  }
+
+  const debug = $opts.debug;
+  const log = createLogger(debug, $opts.log || console.log);
+  if (debug) {
     delete $opts.fs;
     log({ path, opts: $opts });
   }
-  opts.log = log;
-  let ignores = [];
+  $opts.log = log;
   let fileSys = fs;
-  if (isObject(opts)) {
-    ignores = opts.ignores || [];
-    if (opts.fs) {
-      log("using custom fs");
-    } else {
-      log("using node fs");
-    }
-    fileSys = opts.fs || fileSys;
+
+  $opts.ignores = $opts.ignores || [];
+
+  if ($opts.fs) {
+    log("using custom fs");
+  } else {
+    log("using node fs");
   }
 
-  if (typeof opts == "function") {
-    callback = opts;
-    ignores = [];
-  }
+  fileSys = $opts.fs || fileSys;
 
   if (!callback) {
     log("create promise");
+    $opts.ignores = prepareIgnores($opts.ignores, toMatcherFunction);
     return new Promise(function(resolve, reject) {
-      opts.ignores = opts.ignores || [];
-      $readdir(path, opts, function(err, data) {
+      $readdir(path, $opts, function(err, data) {
         if (err) {
           reject(err);
         } else {
@@ -65,13 +77,14 @@ function readdir(path, opts = {}, callback) {
     });
   }
 
-  ignores = ignores || [];
-  ignores = ignores.map(toMatcherFunction);
-
-  opts.ignores = ignores;
-
-  $readdir(path, opts, callback);
+  $opts.ignores = prepareIgnores($opts.ignores, toMatcherFunction);
+  log("$readdir", { path, opts: $opts });
+  $readdir(path, $opts, callback);
 }
+
+const prepareIgnores = (ignores, toMatcherFunction) => {
+  return ignores.map(toMatcherFunction);
+};
 
 function $readdir(path, opts = {}, callback) {
   const log = opts.log;

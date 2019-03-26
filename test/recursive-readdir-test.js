@@ -11,8 +11,8 @@ function getAbsolutePaths(files) {
   return files.map(getAbsolutePath);
 }
 
-describe("readdir", function () {
-  it("correctly lists all files in nested directories", function (done) {
+describe("readdir", function() {
+  it("correctly lists all files in nested directories", function(done) {
     var expectedFiles = getAbsolutePaths([
       "/testdir/a/a",
       "/testdir/a/beans",
@@ -22,27 +22,28 @@ describe("readdir", function () {
       "/testdir/d.txt"
     ]);
 
-    readdir(p.join(__dirname, "testdir"), function (err, list) {
+    readdir(p.join(__dirname, "testdir"), function(err, list) {
       assert.ifError(err);
       assert.deepEqual(list.sort(), expectedFiles.sort());
       done();
     });
   });
 
-  it("ignores the files listed in the ignores array", function (done) {
+  it("ignores the files listed in the ignores array", function(done) {
     var notExpectedFiles = getAbsolutePaths([
       "/testdir/d.txt",
       "/testdir/a/beans"
     ]);
 
-    readdir(p.join(__dirname, "testdir"), ["d.txt", "beans"], function (
+    readdir(p.join(__dirname, "testdir"), ["d.txt", "beans"], function(
       err,
       list
     ) {
       assert.ifError(err);
-      list.forEach(function (file) {
+      list.forEach(function(file) {
         assert.equal(
-          notExpectedFiles.indexOf(file), -1,
+          notExpectedFiles.indexOf(file),
+          -1,
           'Failed to ignore file "' + file + '".'
         );
       });
@@ -50,20 +51,21 @@ describe("readdir", function () {
     });
   });
 
-  it("ignores the directories listed in the ignores array", function (done) {
+  it("ignores the directories listed in the ignores array", function(done) {
     var notExpectedFiles = getAbsolutePaths([
       "/testdir/a/a",
       "/testdir/a/beans"
     ]);
 
-    readdir(p.join(__dirname, "testdir"), ["**/testdir/a"], function (
+    readdir(p.join(__dirname, "testdir"), ["**/testdir/a"], function(
       err,
       list
     ) {
       assert.ifError(err);
-      list.forEach(function (file) {
+      list.forEach(function(file) {
         assert.equal(
-          notExpectedFiles.indexOf(file), -1,
+          notExpectedFiles.indexOf(file),
+          -1,
           'Failed to ignore file "' + file + '".'
         );
       });
@@ -71,20 +73,20 @@ describe("readdir", function () {
     });
   });
 
-  it("ignores symlinked files and directories listed in the ignores array", function (
-    done
-  ) {
+  it("ignores symlinked files and directories listed in the ignores array", function(done) {
     var notExpectedFiles = getAbsolutePaths([
       "/testsymlinks/testdir/linkeddir/hi.docx",
       "/testsymlinks/testdir/linkedfile.wmf"
     ]);
     readdir(
-      p.join(__dirname, "testsymlinks/testdir"), ["linkeddir", "linkedfile.wmf"],
-      function (err, list) {
+      p.join(__dirname, "testsymlinks/testdir"),
+      ["linkeddir", "linkedfile.wmf"],
+      function(err, list) {
         assert.ifError(err);
-        list.forEach(function (file) {
+        list.forEach(function(file) {
           assert.equal(
-            notExpectedFiles.indexOf(file), -1,
+            notExpectedFiles.indexOf(file),
+            -1,
             'Failed to ignore file "' + file + '".'
           );
         });
@@ -93,20 +95,21 @@ describe("readdir", function () {
     );
   });
 
-  it("supports ignoring files with just basename globbing", function (done) {
+  it("supports ignoring files with just basename globbing", function(done) {
     var notExpectedFiles = getAbsolutePaths([
       "/testdir/d.txt",
       "/testdir/a/beans"
     ]);
 
-    readdir(p.join(__dirname, "testdir"), ["*.txt", "beans"], function (
+    readdir(p.join(__dirname, "testdir"), ["*.txt", "beans"], function(
       err,
       list
     ) {
       assert.ifError(err);
-      list.forEach(function (file) {
+      list.forEach(function(file) {
         assert.equal(
-          notExpectedFiles.indexOf(file), -1,
+          notExpectedFiles.indexOf(file),
+          -1,
           'Failed to ignore file "' + file + '".'
         );
       });
@@ -114,7 +117,7 @@ describe("readdir", function () {
     });
   });
 
-  it("supports ignoring files with the globstar syntax", function (done) {
+  it("supports ignoring files with the globstar syntax", function(done) {
     var notExpectedFiles = getAbsolutePaths([
       "/testdir/d.txt",
       "/testdir/a/beans"
@@ -122,11 +125,12 @@ describe("readdir", function () {
 
     var ignores = ["**/*.txt", "**/a/beans"];
 
-    readdir(p.join(__dirname, "testdir"), ignores, function (err, list) {
+    readdir(p.join(__dirname, "testdir"), ignores, function(err, list) {
       assert.ifError(err);
-      list.forEach(function (file) {
+      list.forEach(function(file) {
         assert.equal(
-          notExpectedFiles.indexOf(file), -1,
+          notExpectedFiles.indexOf(file),
+          -1,
           'Failed to ignore file "' + file + '".'
         );
       });
@@ -134,8 +138,8 @@ describe("readdir", function () {
     });
   });
 
-  context("when there is a function in the ignores array", function () {
-    it("passes each file and directory path to the function", function (done) {
+  context("when there is a function in the ignores array", function() {
+    it("passes each file and directory path to the function", function(done) {
       var expectedPaths = getAbsolutePaths([
         "/testdir/a",
         "/testdir/a/a",
@@ -153,7 +157,7 @@ describe("readdir", function () {
         paths.push(path);
         return false;
       }
-      readdir(p.join(__dirname, "testdir"), [ignoreFunction], function (
+      readdir(p.join(__dirname, "testdir"), [ignoreFunction], function(
         err,
         list
       ) {
@@ -163,16 +167,14 @@ describe("readdir", function () {
       });
     });
 
-    it("passes the stat object of each file to the function as its second argument", function (
-      done
-    ) {
+    it("passes the stat object of each file to the function as its second argument", function(done) {
       var paths = {};
 
       function ignoreFunction(path, stats) {
         paths[path] = stats;
         return false;
       }
-      readdir(p.join(__dirname, "testdir"), [ignoreFunction], function (
+      readdir(p.join(__dirname, "testdir"), [ignoreFunction], function(
         err,
         list
       ) {
@@ -183,7 +185,7 @@ describe("readdir", function () {
       });
     });
 
-    it("ignores files that the function returns true for", function (done) {
+    it("ignores files that the function returns true for", function(done) {
       var ignoredFiles = getAbsolutePaths([
         "/testdir/d.txt",
         "/testdir/a/beans"
@@ -193,14 +195,15 @@ describe("readdir", function () {
         return ignoredFiles.indexOf(path) != -1;
       }
 
-      readdir(p.join(__dirname, "testdir"), [ignoreFunction], function (
+      readdir(p.join(__dirname, "testdir"), [ignoreFunction], function(
         err,
         list
       ) {
         assert.ifError(err);
-        list.forEach(function (file) {
+        list.forEach(function(file) {
           assert.equal(
-            ignoredFiles.indexOf(file), -1,
+            ignoredFiles.indexOf(file),
+            -1,
             'Failed to ignore file "' + file + '".'
           );
         });
@@ -208,9 +211,7 @@ describe("readdir", function () {
       });
     });
 
-    it("does not ignore files that the function returns false for", function (
-      done
-    ) {
+    it("does not ignore files that the function returns false for", function(done) {
       var notIgnoredFiles = getAbsolutePaths([
         "/testdir/d.txt",
         "/testdir/a/beans"
@@ -220,14 +221,15 @@ describe("readdir", function () {
         return notIgnoredFiles.indexOf(path) == -1;
       }
 
-      readdir(p.join(__dirname, "testdir"), [ignoreFunction], function (
+      readdir(p.join(__dirname, "testdir"), [ignoreFunction], function(
         err,
         list
       ) {
         assert.ifError(err);
-        notIgnoredFiles.forEach(function (file) {
+        notIgnoredFiles.forEach(function(file) {
           assert.notEqual(
-            notIgnoredFiles.indexOf(file), -1,
+            notIgnoredFiles.indexOf(file),
+            -1,
             'Incorrectly ignored file "' + file + '".'
           );
         });
@@ -235,9 +237,7 @@ describe("readdir", function () {
       });
     });
 
-    it("ignores directories that the function returns true for", function (
-      done
-    ) {
+    it("ignores directories that the function returns true for", function(done) {
       var ignoredDirectory = getAbsolutePath("/testdir/a");
       var ignoredFiles = getAbsolutePaths(["/testdir/a/a", "/testdir/a/beans"]);
 
@@ -245,14 +245,15 @@ describe("readdir", function () {
         return ignoredDirectory == path;
       }
 
-      readdir(p.join(__dirname, "testdir"), [ignoreFunction], function (
+      readdir(p.join(__dirname, "testdir"), [ignoreFunction], function(
         err,
         list
       ) {
         assert.ifError(err);
-        list.forEach(function (file) {
+        list.forEach(function(file) {
           assert.equal(
-            ignoredFiles.indexOf(file), -1,
+            ignoredFiles.indexOf(file),
+            -1,
             'Failed to ignore file "' + file + '".'
           );
         });
@@ -260,9 +261,7 @@ describe("readdir", function () {
       });
     });
 
-    it("does not ignore directories that the function returns false for", function (
-      done
-    ) {
+    it("does not ignore directories that the function returns false for", function(done) {
       var ignoredDirectory = getAbsolutePath("/testdir/a");
       var notIgnoredFiles = getAbsolutePaths([
         "/testdir/b/123",
@@ -273,14 +272,15 @@ describe("readdir", function () {
         return ignoredDirectory == path;
       }
 
-      readdir(p.join(__dirname, "testdir"), [ignoreFunction], function (
+      readdir(p.join(__dirname, "testdir"), [ignoreFunction], function(
         err,
         list
       ) {
         assert.ifError(err);
-        notIgnoredFiles.forEach(function (file) {
+        notIgnoredFiles.forEach(function(file) {
           assert.notEqual(
-            notIgnoredFiles.indexOf(file), -1,
+            notIgnoredFiles.indexOf(file),
+            -1,
             'Incorrectly ignored file "' + file + '".'
           );
         });
@@ -288,9 +288,7 @@ describe("readdir", function () {
       });
     });
 
-    it("does not descend into directories that the function returns true for", function (
-      done
-    ) {
+    it("does not descend into directories that the function returns true for", function(done) {
       var ignoredDirectory = getAbsolutePath("/testdir/a");
       var ignoredFiles = getAbsolutePaths(["/testdir/a/a", "/testdir/a/beans"]);
       var paths = [];
@@ -300,14 +298,15 @@ describe("readdir", function () {
         return ignoredDirectory == path;
       }
 
-      readdir(p.join(__dirname, "testdir"), [ignoreFunction], function (
+      readdir(p.join(__dirname, "testdir"), [ignoreFunction], function(
         err,
         list
       ) {
         assert.ifError(err);
-        paths.forEach(function (file) {
+        paths.forEach(function(file) {
           assert.equal(
-            ignoredFiles.indexOf(file), -1,
+            ignoredFiles.indexOf(file),
+            -1,
             'Transversed file in ignored directory "' + file + '".'
           );
         });
@@ -316,20 +315,18 @@ describe("readdir", function () {
     });
   });
 
-  it("works when there are no files to report except ignored files", function (
-    done
-  ) {
-    readdir(p.join(__dirname, "testdirBeta"), ["*"], function (err, list) {
+  it("works when there are no files to report except ignored files", function(done) {
+    readdir(p.join(__dirname, "testdirBeta"), ["*"], function(err, list) {
       assert.ifError(err);
       assert.equal(list.length, 0, "expect to report 0 files");
       done();
     });
   });
 
-  it("works when negated ignore list is given", function (done) {
+  it("works when negated ignore list is given", function(done) {
     var expectedFiles = getAbsolutePaths(["/testdirBeta/ignore.txt"]);
 
-    readdir(p.join(__dirname, "testdirBeta"), ["!*.txt"], function (err, list) {
+    readdir(p.join(__dirname, "testdirBeta"), ["!*.txt"], function(err, list) {
       assert.ifError(err);
       assert.deepEqual(
         list.sort(),
@@ -340,13 +337,13 @@ describe("readdir", function () {
     });
   });
 
-  it("traverses directory and file symbolic links", function (done) {
+  it("traverses directory and file symbolic links", function(done) {
     var expectedFiles = getAbsolutePaths([
       "/testsymlinks/testdir/linkeddir/hi.docx",
       "/testsymlinks/testdir/linkedfile.wmf"
     ]);
 
-    readdir(p.join(__dirname, "testsymlinks", "testdir"), function (err, list) {
+    readdir(p.join(__dirname, "testsymlinks", "testdir"), function(err, list) {
       assert.ifError(err);
       assert.deepEqual(
         list.sort(),
@@ -360,7 +357,7 @@ describe("readdir", function () {
   if (!global.Promise) {
     console.log("Native Promise not supported - skipping tests");
   } else {
-    it("works with promises", function (done) {
+    it("works with promises", function(done) {
       var expectedFiles = getAbsolutePaths([
         "/testdir/a/a",
         "/testdir/a/beans",
@@ -371,14 +368,14 @@ describe("readdir", function () {
       ]);
 
       readdir(p.join(__dirname, "testdir"))
-        .then(function (list) {
+        .then(function(list) {
           assert.deepEqual(list.sort(), expectedFiles.sort());
           done();
         })
         .catch(done);
     });
 
-    it("works with async/await", async function (done) {
+    it("works with async/await", async function() {
       var expectedFiles = getAbsolutePaths([
         "/testdir/a/a",
         "/testdir/a/beans",
@@ -389,17 +386,17 @@ describe("readdir", function () {
       ]);
 
       try {
-        const list = await readdir(p.join(__dirname, "testdir"))
+        const list = await readdir(p.join(__dirname, "testdir"));
         assert.deepEqual(list.sort(), expectedFiles.sort());
         // console.log('async/await works :)')
-        done();
+        // done();
       } catch (e) {
-        console.log(e)
-        done();
+        console.log(e);
+        // done();
       }
     });
 
-    it("correctly ignores when using promises", function (done) {
+    it.only("correctly ignores when using promises", function(done) {
       var expectedFiles = getAbsolutePaths([
         "/testdir/a/a",
         "/testdir/a/beans",
@@ -408,7 +405,7 @@ describe("readdir", function () {
       ]);
 
       readdir(p.join(__dirname, "testdir"), ["*.txt"])
-        .then(function (list) {
+        .then(function(list) {
           assert.deepEqual(list.sort(), expectedFiles.sort());
           done();
         })
