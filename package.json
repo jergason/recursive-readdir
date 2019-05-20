@@ -9,6 +9,9 @@
     "url": "git://github.com/jergason/recursive-readdir.git"
   },
   "main": "./index.js",
+  "files": [
+    "index.js"
+  ],
   "scripts": {
     "test": "mocha test/"
   },
