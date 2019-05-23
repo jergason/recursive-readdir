@@ -16,7 +16,7 @@ on OS X and Linux, the order of files inside directories is [not guaranteed](htt
 ```javascript
 var recursive = require("recursive-readdir");
 
-recursive("some/path", function (err, files) {
+recursive("some/path", function(err, files) {
   // `files` is an array of file paths
   console.log(files);
 });
@@ -28,7 +28,7 @@ It can also take a list of files to ignore.
 var recursive = require("recursive-readdir");
 
 // ignore files named "foo.cs" or files that end in ".html".
-recursive("some/path", ["foo.cs", "*.html"], function (err, files) {
+recursive("some/path", ["foo.cs", "*.html"], function(err, files) {
   console.log(files);
 });
 ```
@@ -46,12 +46,13 @@ function ignoreFunc(file, stats) {
 }
 
 // Ignore files named "foo.cs" and descendants of directories named test
-recursive("some/path", ["foo.cs", ignoreFunc], function (err, files) {
+recursive("some/path", ["foo.cs", ignoreFunc], function(err, files) {
   console.log(files);
 });
 ```
 
 ## Promises
+
 You can omit the callback and return a promise instead.
 
 ```javascript
@@ -69,3 +70,34 @@ recursive("some/path").then(
 
 The ignore strings support Glob syntax via
 [minimatch](https://github.com/isaacs/minimatch).
+
+## Custom file system
+
+You can now pass in an options object in place of `ignores`, so that you can pass in a custom filesystem as an `fs` option. This is ideal for testing or when operating on an in-memory file system etc.
+
+```js
+import { fs, vol } from "memfs";
+
+const fileStruct = {
+  "./README.md": "# hello",
+  "./src/index.js": "1 + 2;",
+  "./node_modules/debug/index.js": "2 + 3;"
+};
+vol.fromJSON(fileStruct, "/app");
+
+const successFn = files => console.log(files);
+const errFn = err => console.error(err);
+```
+
+You can also pass debugging and logging options to monitor how the file structure is processed,
+what files are ignore etc.
+
+```js
+// using promise API
+recursive("/app", {
+  ignores: ["README.md"],
+  fs, // in-memory fs
+  debug: true,
+  log: (...msg) => console.log("readdir", ...msg)
+}).then(successFn, errFn);
+```
