@@ -55,7 +55,9 @@ recursive("some/path", ["foo.cs", ignoreFunc], function (err, files) {
 You can omit the callback and return a promise instead.
 
 ```javascript
-readdir("some/path").then(
+var recursive = require("recursive-readdir");
+
+recursive("some/path").then(
   function(files) {
     console.log("files are", files);
   },
