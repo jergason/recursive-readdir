@@ -1,4 +1,3 @@
-/* eslint-env mocha */
 var assert = require("assert");
 var p = require("path");
 var readdir = require("../index");
@@ -73,9 +72,7 @@ describe("readdir", function() {
     });
   });
 
-  it("ignores symlinked files and directories listed in the ignores array", function(
-    done
-  ) {
+  it("ignores symlinked files and directories listed in the ignores array", function(done) {
     var notExpectedFiles = getAbsolutePaths([
       "/testsymlinks/testdir/linkeddir/hi.docx",
       "/testsymlinks/testdir/linkedfile.wmf"
@@ -140,7 +137,7 @@ describe("readdir", function() {
     });
   });
 
-  context("when there is a function in the ignores array", function() {
+  describe("when there is a function in the ignores array", function() {
     it("passes each file and directory path to the function", function(done) {
       var expectedPaths = getAbsolutePaths([
         "/testdir/a",
@@ -158,28 +155,20 @@ describe("readdir", function() {
         paths.push(path);
         return false;
       }
-      readdir(p.join(__dirname, "testdir"), [ignoreFunction], function(
-        err,
-        list
-      ) {
+      readdir(p.join(__dirname, "testdir"), [ignoreFunction], function(err) {
         assert.ifError(err);
         assert.deepEqual(paths.sort(), expectedPaths.sort());
         done();
       });
     });
 
-    it("passes the stat object of each file to the function as its second argument", function(
-      done
-    ) {
+    it("passes the stat object of each file to the function as its second argument", function(done) {
       var paths = {};
       function ignoreFunction(path, stats) {
         paths[path] = stats;
         return false;
       }
-      readdir(p.join(__dirname, "testdir"), [ignoreFunction], function(
-        err,
-        list
-      ) {
+      readdir(p.join(__dirname, "testdir"), [ignoreFunction], function(err) {
         assert.ifError(err);
         assert(paths[getAbsolutePath("/testdir/a")].isDirectory());
         assert(paths[getAbsolutePath("/testdir/c.txt")].isFile());
@@ -212,9 +201,7 @@ describe("readdir", function() {
       });
     });
 
-    it("does not ignore files that the function returns false for", function(
-      done
-    ) {
+    it("does not ignore files that the function returns false for", function(done) {
       var notIgnoredFiles = getAbsolutePaths([
         "/testdir/d.txt",
         "/testdir/a/beans"
@@ -223,10 +210,7 @@ describe("readdir", function() {
         return notIgnoredFiles.indexOf(path) == -1;
       }
 
-      readdir(p.join(__dirname, "testdir"), [ignoreFunction], function(
-        err,
-        list
-      ) {
+      readdir(p.join(__dirname, "testdir"), [ignoreFunction], function(err) {
         assert.ifError(err);
         notIgnoredFiles.forEach(function(file) {
           assert.notEqual(
@@ -239,9 +223,7 @@ describe("readdir", function() {
       });
     });
 
-    it("ignores directories that the function returns true for", function(
-      done
-    ) {
+    it("ignores directories that the function returns true for", function(done) {
       var ignoredDirectory = getAbsolutePath("/testdir/a");
       var ignoredFiles = getAbsolutePaths(["/testdir/a/a", "/testdir/a/beans"]);
       function ignoreFunction(path) {
@@ -264,9 +246,7 @@ describe("readdir", function() {
       });
     });
 
-    it("does not ignore directories that the function returns false for", function(
-      done
-    ) {
+    it("does not ignore directories that the function returns false for", function(done) {
       var ignoredDirectory = getAbsolutePath("/testdir/a");
       var notIgnoredFiles = getAbsolutePaths([
         "/testdir/b/123",
@@ -276,10 +256,7 @@ describe("readdir", function() {
         return ignoredDirectory == path;
       }
 
-      readdir(p.join(__dirname, "testdir"), [ignoreFunction], function(
-        err,
-        list
-      ) {
+      readdir(p.join(__dirname, "testdir"), [ignoreFunction], function(err) {
         assert.ifError(err);
         notIgnoredFiles.forEach(function(file) {
           assert.notEqual(
@@ -292,9 +269,7 @@ describe("readdir", function() {
       });
     });
 
-    it("does not descend into directories that the function returns true for", function(
-      done
-    ) {
+    it("does not descend into directories that the function returns true for", function(done) {
       var ignoredDirectory = getAbsolutePath("/testdir/a");
       var ignoredFiles = getAbsolutePaths(["/testdir/a/a", "/testdir/a/beans"]);
       var paths = [];
@@ -303,10 +278,7 @@ describe("readdir", function() {
         return ignoredDirectory == path;
       }
 
-      readdir(p.join(__dirname, "testdir"), [ignoreFunction], function(
-        err,
-        list
-      ) {
+      readdir(p.join(__dirname, "testdir"), [ignoreFunction], function(err) {
         assert.ifError(err);
         paths.forEach(function(file) {
           assert.equal(
@@ -320,9 +292,7 @@ describe("readdir", function() {
     });
   });
 
-  it("works when there are no files to report except ignored files", function(
-    done
-  ) {
+  it("works when there are no files to report except ignored files", function(done) {
     readdir(p.join(__dirname, "testdirBeta"), ["*"], function(err, list) {
       assert.ifError(err);
       assert.equal(list.length, 0, "expect to report 0 files");
@@ -361,41 +331,37 @@ describe("readdir", function() {
     });
   });
 
-  if (!global.Promise) {
-    console.log("Native Promise not supported - skipping tests");
-  } else {
-    it("works with promises", function(done) {
-      var expectedFiles = getAbsolutePaths([
-        "/testdir/a/a",
-        "/testdir/a/beans",
-        "/testdir/b/123",
-        "/testdir/b/b/hurp-durp",
-        "/testdir/c.txt",
-        "/testdir/d.txt"
-      ]);
+  it("works with promises", function(done) {
+    var expectedFiles = getAbsolutePaths([
+      "/testdir/a/a",
+      "/testdir/a/beans",
+      "/testdir/b/123",
+      "/testdir/b/b/hurp-durp",
+      "/testdir/c.txt",
+      "/testdir/d.txt"
+    ]);
 
-      readdir(p.join(__dirname, "testdir"))
-        .then(function(list) {
-          assert.deepEqual(list.sort(), expectedFiles.sort());
-          done();
-        })
-        .catch(done);
-    });
+    readdir(p.join(__dirname, "testdir"))
+      .then(function(list) {
+        assert.deepEqual(list.sort(), expectedFiles.sort());
+        done();
+      })
+      .catch(done);
+  });
 
-    it("correctly ignores when using promises", function(done) {
-      var expectedFiles = getAbsolutePaths([
-        "/testdir/a/a",
-        "/testdir/a/beans",
-        "/testdir/b/123",
-        "/testdir/b/b/hurp-durp"
-      ]);
+  it("correctly ignores when using promises", function(done) {
+    var expectedFiles = getAbsolutePaths([
+      "/testdir/a/a",
+      "/testdir/a/beans",
+      "/testdir/b/123",
+      "/testdir/b/b/hurp-durp"
+    ]);
 
-      readdir(p.join(__dirname, "testdir"), ["*.txt"])
-        .then(function(list) {
-          assert.deepEqual(list.sort(), expectedFiles.sort());
-          done();
-        })
-        .catch(done);
-    });
-  }
+    readdir(p.join(__dirname, "testdir"), ["*.txt"])
+      .then(function(list) {
+        assert.deepEqual(list.sort(), expectedFiles.sort());
+        done();
+      })
+      .catch(done);
+  });
 });
