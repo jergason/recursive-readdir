@@ -3,18 +3,18 @@ var p = require("path");
 var minimatch = require("minimatch");
 
 function patternMatcher(pattern) {
-  return function(path, stats) {
+  return function(filePath, stats) {
     var minimatcher = new minimatch.Minimatch(pattern, { matchBase: true });
-    return (!minimatcher.negate || stats.isFile()) && minimatcher.match(path);
+    return (
+      (!minimatcher.negate || stats.isFile()) && minimatcher.match(filePath)
+    );
   };
 }
 
 function toMatcherFunction(ignoreEntry) {
-  if (typeof ignoreEntry == "function") {
-    return ignoreEntry;
-  } else {
-    return patternMatcher(ignoreEntry);
-  }
+  return typeof ignoreEntry == "function"
+    ? ignoreEntry
+    : patternMatcher(ignoreEntry);
 }
 
 function readdir(path, ignores, callback) {
@@ -44,9 +44,12 @@ function readdir(path, ignores, callback) {
       return callback(err);
     }
 
+    // keep a counter of how many files we need to process
+    // so it's easy to check when we're done
     var pending = files.length;
     if (!pending) {
-      // we are done, woop woop
+      // we've hit a base case: no files inside this directory
+      // return back up
       return callback(null, list);
     }
 
@@ -64,6 +67,8 @@ function readdir(path, ignores, callback) {
         ) {
           pending -= 1;
           if (!pending) {
+            // we've hit a base case: we've processed all the files
+            // return from the recursion
             return callback(null, list);
           }
           return null;
@@ -78,6 +83,8 @@ function readdir(path, ignores, callback) {
             list = list.concat(res);
             pending -= 1;
             if (!pending) {
+              // we've hit a base case: we've processed all the files
+              // return from the recursion
               return callback(null, list);
             }
           });
@@ -85,6 +92,8 @@ function readdir(path, ignores, callback) {
           list.push(filePath);
           pending -= 1;
           if (!pending) {
+            // we've hit a base case: we've processed all the files
+            // return from the recursion
             return callback(null, list);
           }
         }
