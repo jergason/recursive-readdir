@@ -1,5 +1,5 @@
 {
-  "author": "Jamison Dance <jergason@gmail.com> (http://jamisondance.com/)",
+  "author": "Jamison Dance <jergason@gmail.com> (http://jamison.dance.com/)",
   "name": "recursive-readdir",
   "description": "Get an array of all files in a directory and subdirectories.",
   "license": "MIT",
@@ -20,12 +20,12 @@
     "lister"
   ],
   "engines": {
-    "node": ">=0.12.0"
+    "node": ">=6.0.0"
   },
   "dependencies": {
     "minimatch": "3.0.4"
   },
   "devDependencies": {
-    "mocha": "1.14.0"
+    "mocha": "6.1.4"
   }
 }
