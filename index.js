@@ -37,9 +37,11 @@ function recursiveReaddir(path, ignores) {
     }
 
     // process each entry recursively (in case it is a directory)
-    return Promise.all(files.map(processFile(path, ignores))).then(function(
-      foundFiles
-    ) {
+    return Promise.all(
+      files.map(function(file) {
+        return processFile(path, ignores, file);
+      })
+    ).then(function(foundFiles) {
       return flatten(
         // we'll also have undefineds when there are ignored files so remove those
         foundFiles.filter(function(f) {
@@ -51,28 +53,26 @@ function recursiveReaddir(path, ignores) {
 }
 
 // let's partially apply this for a nicer API
-function processFile(path, ignores) {
-  return function(file) {
-    var filePath = p.join(path, file);
-    return statP(filePath).then(function(stats) {
-      // if we should ignore this file, skip over it
-      if (
-        ignores.some(function(matcher) {
-          return matcher(filePath, stats);
-        })
-      ) {
-        return;
-      }
+function processFile(path, ignores, file) {
+  var filePath = p.join(path, file);
+  return statP(filePath).then(function(stats) {
+    // if we should ignore this file, skip over it
+    if (
+      ignores.some(function(matcher) {
+        return matcher(filePath, stats);
+      })
+    ) {
+      return;
+    }
 
-      if (stats.isDirectory()) {
-        // recurse through the nested directory
-        return recursiveReaddir(filePath, ignores);
-      } else {
-        // just return the individual file
-        return filePath;
-      }
-    });
-  };
+    if (stats.isDirectory()) {
+      // recurse through the nested directory
+      return recursiveReaddir(filePath, ignores);
+    } else {
+      // just return the individual file
+      return filePath;
+    }
+  });
 }
 
 // convert an entry in to the ingores array in to a file matcher function
@@ -121,5 +121,81 @@ function statP(path) {
     });
   });
 }
+
+recursiveReaddirCallback.callbacks = function readdir(path, ignores, callback) {
+  if (typeof ignores == "function") {
+    callback = ignores;
+    ignores = [];
+  }
+
+  if (!callback) {
+    return new Promise(function(resolve, reject) {
+      readdir(path, ignores || [], function(err, data) {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(data);
+        }
+      });
+    });
+  }
+
+  ignores = ignores.map(toMatcherFunction);
+
+  var list = [];
+
+  fs.readdir(path, function(err, files) {
+    if (err) {
+      return callback(err);
+    }
+
+    var pending = files.length;
+    if (!pending) {
+      // we are done, woop woop
+      return callback(null, list);
+    }
+
+    files.forEach(function(file) {
+      var filePath = p.join(path, file);
+      fs.stat(filePath, function(_err, stats) {
+        if (_err) {
+          return callback(_err);
+        }
+
+        if (
+          ignores.some(function(matcher) {
+            return matcher(filePath, stats);
+          })
+        ) {
+          pending -= 1;
+          if (!pending) {
+            return callback(null, list);
+          }
+          return null;
+        }
+
+        if (stats.isDirectory()) {
+          readdir(filePath, ignores, function(__err, res) {
+            if (__err) {
+              return callback(__err);
+            }
+
+            list = list.concat(res);
+            pending -= 1;
+            if (!pending) {
+              return callback(null, list);
+            }
+          });
+        } else {
+          list.push(filePath);
+          pending -= 1;
+          if (!pending) {
+            return callback(null, list);
+          }
+        }
+      });
+    });
+  });
+};
 
 module.exports = recursiveReaddirCallback;
