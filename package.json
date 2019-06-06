@@ -26,6 +26,6 @@
     "minimatch": "3.0.4"
   },
   "devDependencies": {
-    "mocha": "1.14.0"
+    "mocha": "6.1.4"
   }
 }
