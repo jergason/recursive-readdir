@@ -396,7 +396,7 @@ describe("readdir", function() {
       }
     });
 
-    it.only("correctly ignores when using promises", function(done) {
+    it("correctly ignores when using promises", function(done) {
       var expectedFiles = getAbsolutePaths([
         "/testdir/a/a",
         "/testdir/a/beans",

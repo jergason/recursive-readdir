@@ -1,12 +1,12 @@
 {
-  "author": "Jamison Dance <jergason@gmail.com> (http://jamisondance.com/)",
-  "name": "recursive-readdir",
-  "description": "Get an array of all files in a directory and subdirectories.",
+  "author": "Kristian Mandrup <kmandrup@gmail.com>",
+  "name": "recursive-readdir-ext",
+  "description": "Get array of files directory and subdirectories. Allows for filters, debugging and fake fs for more fine-grained control",
   "license": "MIT",
-  "version": "2.2.3",
+  "version": "2.3.0",
   "repository": {
     "type": "git",
-    "url": "git://github.com/jergason/recursive-readdir.git"
+    "url": "git://github.com/kristianmandrup/recursive-readdir.git"
   },
   "main": "./index.js",
   "scripts": {
@@ -14,15 +14,18 @@
   },
   "keywords": [
     "directory",
-    "lister"
+    "lister",
+    "readdir",
+    "filter",
+    "promise"
   ],
   "engines": {
-    "node": ">=0.10.0"
+    "node": ">=7.0"
   },
   "dependencies": {
     "minimatch": "^3.0.4"
   },
   "devDependencies": {
-    "mocha": "^6.0.2"
+    "mocha": "^6.1.4"
   }
 }

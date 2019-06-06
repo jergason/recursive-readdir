@@ -1,20 +1,19 @@
-# recursive-readdir
-
-[![Build Status](https://travis-ci.org/jergason/recursive-readdir.svg?branch=master)](https://travis-ci.org/jergason/recursive-readdir)
+# recursive-readdir-ext
 
 Recursively list all files in a directory and its subdirectories. It does not list the directories themselves.
 
-Because it uses fs.readdir, which calls [readdir](http://linux.die.net/man/3/readdir) under the hood
-on OS X and Linux, the order of files inside directories is [not guaranteed](http://stackoverflow.com/questions/8977441/does-readdir-guarantee-an-order).
+Because it uses fs.readdir, which calls [readdir](http://linux.die.net/man/3/readdir) under the hood on OS X and Linux, the order of files inside directories is [not guaranteed](http://stackoverflow.com/questions/8977441/does-readdir-guarantee-an-order).
+
+The library is a based on [recursive-readdir](github.com/jergason/recursive-readdir.git) by Jamison Dance <jergason@gmail.com> (http://jamisondance.com/)
 
 ## Installation
 
-    npm install recursive-readdir
+    npm install recursive-readdir-ext
 
 ## Usage
 
 ```javascript
-var recursive = require("recursive-readdir");
+var recursive = require("recursive-readdir-ext");
 
 recursive("some/path", function(err, files) {
   // `files` is an array of file paths
