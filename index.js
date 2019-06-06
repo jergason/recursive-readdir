@@ -2,43 +2,8 @@ var fs = require("fs");
 var p = require("path");
 var minimatch = require("minimatch");
 
-function patternMatcher(pattern) {
-  return function(filePath, stats) {
-    var minimatcher = new minimatch.Minimatch(pattern, { matchBase: true });
-    return (
-      (!minimatcher.negate || stats.isFile()) && minimatcher.match(filePath)
-    );
-  };
-}
-
-function readdirP(path) {
-  return new Promise(function(resolve, reject) {
-    fs.readdir(path, function(err, files) {
-      if (err) {
-        return reject(err);
-      }
-      return resolve(files);
-    });
-  });
-}
-
-function statP(path) {
-  return new Promise(function(resolve, reject) {
-    fs.stat(path, function(err, stats) {
-      if (err) {
-        return reject(err);
-      }
-      return resolve(stats);
-    });
-  });
-}
-
-function toMatcherFunction(ignoreEntry) {
-  return typeof ignoreEntry == "function"
-    ? ignoreEntry
-    : patternMatcher(ignoreEntry);
-}
-
+// we expose this as a the top-level API to maintain backwards compatability
+// and support a callback-based API
 function recursiveReaddirCallback(path, ignores, callback) {
   if (typeof ignores == "function") {
     callback = ignores;
@@ -65,31 +30,22 @@ function recursiveReaddir(path, ignores) {
   }
   ignores = ignores.map(toMatcherFunction);
 
-  var list = [];
-
   return readdirP(path).then(function(files) {
-    // keep a counter of how many files we need to process
-    // so it's easy to check when we're done
-    var pending = files.length;
-    if (!pending) {
-      // we've hit a base case: no files inside this directory
-      // return back up
-      return list;
+    if (files.length === 0) {
+      // if we don't have any files we just bail
+      return [];
     }
 
-    // return a promise when all files inside me have been resolved
+    // process each entry recursively (in case it is a directory)
     return Promise.all(files.map(processFile(path, ignores))).then(function(
       foundFiles
     ) {
-      // TODO: filter out the undefineds this I think
-      // TODO: fix this, concat them?
-      // wait no this is a list of results from whatever processFile is
-      // flatten this?
       return list.concat(
-        [].concat.apply(
-          [],
+        // foundFiles will have nested arrays if there are subdirectories
+        // so make sure to flatten it
+        flatten(
+          // we'll also have undefineds when there are ignored files so remove those
           foundFiles.filter(function(f) {
-            // filter out underfineds
             return !!f;
           })
         )
@@ -109,12 +65,11 @@ function processFile(path, ignores) {
           return matcher(filePath, stats);
         })
       ) {
-        // if this file should be ignored, just skip over it
         return;
       }
 
       if (stats.isDirectory()) {
-        // if it's a directory, recurse through it
+        // recurse through the nested directory
         return recursiveReaddir(filePath, ignores);
       } else {
         // just return the individual file
@@ -124,5 +79,51 @@ function processFile(path, ignores) {
   };
 }
 
-// we expose this as a the top-level API to maintain backwards compatability
+// convert an entry in to the ingores array in to a file matcher function
+// if it isn't already
+function toMatcherFunction(ignoreEntry) {
+  return typeof ignoreEntry == "function"
+    ? ignoreEntry
+    : patternMatcher(ignoreEntry);
+}
+
+// convert a glob pattern in to a matcher function
+function patternMatcher(pattern) {
+  return function(filePath, stats) {
+    var minimatcher = new minimatch.Minimatch(pattern, { matchBase: true });
+    return (
+      (!minimatcher.negate || stats.isFile()) && minimatcher.match(filePath)
+    );
+  };
+}
+
+// flatten a nested array, thanks stackoverflow
+function flatten(arr) {
+  return [].concat.apply([], arr);
+}
+
+// fs.readdir promisified
+function readdirP(path) {
+  return new Promise(function(resolve, reject) {
+    fs.readdir(path, function(err, files) {
+      if (err) {
+        return reject(err);
+      }
+      return resolve(files);
+    });
+  });
+}
+
+// fs.stat promisified
+function statP(path) {
+  return new Promise(function(resolve, reject) {
+    fs.stat(path, function(err, stats) {
+      if (err) {
+        return reject(err);
+      }
+      return resolve(stats);
+    });
+  });
+}
+
 module.exports = recursiveReaddirCallback;
