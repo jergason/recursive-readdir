@@ -40,15 +40,11 @@ function recursiveReaddir(path, ignores) {
     return Promise.all(files.map(processFile(path, ignores))).then(function(
       foundFiles
     ) {
-      return list.concat(
-        // foundFiles will have nested arrays if there are subdirectories
-        // so make sure to flatten it
-        flatten(
-          // we'll also have undefineds when there are ignored files so remove those
-          foundFiles.filter(function(f) {
-            return !!f;
-          })
-        )
+      return flatten(
+        // we'll also have undefineds when there are ignored files so remove those
+        foundFiles.filter(function(f) {
+          return !!f;
+        })
       );
     });
   });
