@@ -17,6 +17,25 @@ function toMatcherFunction(ignoreEntry) {
   }
 }
 
+function _getFileStat(filePath, callback) {
+  fs.stat(filePath, function (err, stats) {
+    if (err) {
+      if (err.code === 'ENOENT') {
+        fs.lstat(filePath, function (_err, _stats) {
+          if (_err) {
+            return callback(_err);
+          }
+          return callback(null, _stats);
+        });
+      } else {
+        return callback(err);
+      }
+    }
+
+    return callback(null, stats);
+  });
+}
+
 function readdir(path, ignores, callback) {
   if (typeof ignores == "function") {
     callback = ignores;
@@ -52,7 +71,7 @@ function readdir(path, ignores, callback) {
 
     files.forEach(function(file) {
       var filePath = p.join(path, file);
-      fs.stat(filePath, function(_err, stats) {
+      _getFileStat(filePath, function(_err, stats) {
         if (_err) {
           return callback(_err);
         }
@@ -69,7 +88,7 @@ function readdir(path, ignores, callback) {
           return null;
         }
 
-        if (stats.isDirectory()) {
+        if (stats && stats.isDirectory && stats.isDirectory()) {
           readdir(filePath, ignores, function(__err, res) {
             if (__err) {
               return callback(__err);
