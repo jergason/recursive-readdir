@@ -33,7 +33,7 @@ recursive("some/path", ["foo.cs", "*.html"], function (err, files) {
 });
 ```
 
-It can also jsut include certain type of files
+It can also just include certain type of files
 ```javascript
 var recursive = require("recursive-readdir");
 
