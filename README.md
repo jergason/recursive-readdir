@@ -33,6 +33,17 @@ recursive("some/path", ["foo.cs", "*.html"], function (err, files) {
 });
 ```
 
+It can also jsut include certain type of files
+```javascript
+var recursive = require("recursive-readdir");
+
+// include files that end in ".html".
+recursive("some/path", ["!*.html"], function (err, files) {
+  console.log(files);
+});
+```
+
+
 You can also pass functions which are called to determine whether or not to
 ignore a file:
 
