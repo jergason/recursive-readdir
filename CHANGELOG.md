@@ -1,3 +1,9 @@
+v2.2.3 - Mon, 19 Sep 2016 21:55:22 GMT
+--------------------------------------
+
+- [1840d5a7e58e9d8b96c217b8066077fec339de21](../../commit/1840d5a7e58e9d8b96c217b8066077fec339de21) [fixed] updated minimatch to 3.0.5 (and added caret semver range) to address vulnerability in minimatch 3.0.4
+
+
 v2.1.0 - Mon, 19 Sep 2016 21:55:22 GMT
 --------------------------------------
 
