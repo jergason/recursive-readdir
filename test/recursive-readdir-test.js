@@ -361,6 +361,22 @@ describe("readdir", function() {
     });
   });
 
+  it("does not fail if the symlink is broken and returns the symlink in file list", function(done) {
+    var expectedFiles = getAbsolutePaths([
+      "/testsymlinks/testbroken/file.dat.alias"
+    ]);
+
+    readdir(p.join(__dirname, "testsymlinks", "testbroken"), function(err, list) {
+      assert.ifError(err);
+      assert.deepEqual(
+        list.sort(),
+        expectedFiles,
+        "Failed to find expected files."
+      );
+      done();
+    });
+  });
+
   if (!global.Promise) {
     console.log("Native Promise not supported - skipping tests");
   } else {
